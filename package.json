@@ -4,12 +4,16 @@
     "openai": "3.2.1"
   },
   "devDependencies": {
-    "vite": "latest"
+    "vite": "latest",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.4"
   },
   "scripts": {
     "start": "vite",
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "watch": "webpack --watch --mode=development",
+    "buildw": "webpack --mode=production"
   }
 }

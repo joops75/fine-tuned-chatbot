@@ -1,5 +1,5 @@
 import { Configuration, OpenAIApi } from 'openai'
-import { process } from './env'
+import { process } from '../env'
 
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
@@ -8,21 +8,21 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration)
 
 const chatbotConversation = document.getElementById('chatbot-conversation')
- 
+
 const conversationArr = [
     {
         role: 'system',
         content: 'You are a highly knowledgeable assistant that keeps its answers short.'
     }
-] 
- 
+]
+
 document.addEventListener('submit', (e) => {
     e.preventDefault()
-    const userInput = document.getElementById('user-input')   
-    conversationArr.push({ 
+    const userInput = document.getElementById('user-input')
+    conversationArr.push({
         role: 'user',
         content: userInput.value
-    }) 
+    })
     fetchReply()
     const newSpeechBubble = document.createElement('div')
     newSpeechBubble.classList.add('speech', 'speech-human')
@@ -30,15 +30,15 @@ document.addEventListener('submit', (e) => {
     newSpeechBubble.textContent = userInput.value
     userInput.value = ''
     chatbotConversation.scrollTop = chatbotConversation.scrollHeight
-}) 
+})
 
-async function fetchReply(){
+async function fetchReply() {
     const response = await openai.createChatCompletion({
         model: 'gpt-4',
         messages: conversationArr,
         presence_penalty: 0,
         frequency_penalty: 0.3
-    }) 
+    })
     conversationArr.push(response.data.choices[0].message)
     renderTypewriterText(response.data.choices[0].message.content)
 }
@@ -49,7 +49,7 @@ function renderTypewriterText(text) {
     chatbotConversation.appendChild(newSpeechBubble)
     let i = 0
     const interval = setInterval(() => {
-        newSpeechBubble.textContent += text.slice(i-1, i)
+        newSpeechBubble.textContent += text.slice(i - 1, i)
         if (text.length === i) {
             clearInterval(interval)
             newSpeechBubble.classList.remove('blinking-cursor')
