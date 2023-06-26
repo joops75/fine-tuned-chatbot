@@ -1,5 +1,5 @@
 import { Configuration, OpenAIApi } from 'openai'
-import { process } from '../env'
+// import { process } from '../env' // only required in development
 
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
@@ -9,20 +9,12 @@ const openai = new OpenAIApi(configuration)
 
 const chatbotConversation = document.getElementById('chatbot-conversation')
 
-const conversationArr = [
-    {
-        role: 'system',
-        content: 'You are a highly knowledgeable assistant that keeps its answers short.'
-    }
-]
+let conversationStr = ''
 
 document.addEventListener('submit', (e) => {
     e.preventDefault()
     const userInput = document.getElementById('user-input')
-    conversationArr.push({
-        role: 'user',
-        content: userInput.value
-    })
+    conversationStr += ` ${userInput.value} ->`
     fetchReply()
     const newSpeechBubble = document.createElement('div')
     newSpeechBubble.classList.add('speech', 'speech-human')
@@ -33,14 +25,19 @@ document.addEventListener('submit', (e) => {
 })
 
 async function fetchReply() {
-    const response = await openai.createChatCompletion({
-        model: 'gpt-4',
-        messages: conversationArr,
+    const response = await openai.createCompletion({
+        model: 'davinci', // fine-tuned model name here if available. see https://platform.openai.com/docs/guides/fine-tuning
+        prompt: conversationStr,
         presence_penalty: 0,
-        frequency_penalty: 0.3
+        frequency_penalty: 0.3,
+        max_tokens: 100,
+        temperature: 0,
+        stop: ['->', '\n'] // stops the ai generating further text when it generates any string in provided array. stop strings are not included in the output
     })
-    conversationArr.push(response.data.choices[0].message)
-    renderTypewriterText(response.data.choices[0].message.content)
+
+    const { text } = response.data.choices[0]
+    conversationStr += ` ${text} \n`
+    renderTypewriterText(text)
 }
 
 function renderTypewriterText(text) {
