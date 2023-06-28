@@ -1,12 +1,3 @@
-import { Configuration, OpenAIApi } from 'openai'
-// import { process } from '../env' // only required in development
-
-const configuration = new Configuration({
-    apiKey: process.env.OPENAI_API_KEY,
-})
-
-const openai = new OpenAIApi(configuration)
-
 const chatbotConversation = document.getElementById('chatbot-conversation')
 
 let conversationStr = ''
@@ -25,19 +16,21 @@ document.addEventListener('submit', (e) => {
 })
 
 async function fetchReply() {
-    const response = await openai.createCompletion({
-        model: 'davinci', // fine-tuned model name here if available. see https://platform.openai.com/docs/guides/fine-tuning
-        prompt: conversationStr,
-        presence_penalty: 0,
-        frequency_penalty: 0.3,
-        max_tokens: 100,
-        temperature: 0,
-        stop: ['->', '\n'] // stops the ai generating further text when it generates any string in provided array. stop strings are not included in the output
+    const url = `${process.env.HOME}/netlify/functions/fetchAIKey.js`
+    const response = await fetch(url, {
+        method: 'post',
+        headers: {
+            'Content-Type': 'text/plain'
+        },
+        body: JSON.stringify({
+            text: conversationStr
+        })
     })
 
-    const { text } = response.data.choices[0]
-    conversationStr += ` ${text} \n`
-    renderTypewriterText(text)
+    console.log(response)
+    // const { text } = response.data.choices[0]
+    // conversationStr += ` ${text} \n`
+    // renderTypewriterText(text)
 }
 
 function renderTypewriterText(text) {

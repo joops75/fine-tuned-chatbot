@@ -1,0 +1,5 @@
+To install the netlify cli:
+npm i netlify-cli -g
+
+To initialise a netlify site:
+netlify init
