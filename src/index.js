@@ -16,21 +16,20 @@ document.addEventListener('submit', (e) => {
 })
 
 async function fetchReply() {
-    const url = `${process.env.HOME}/netlify/functions/fetchAIKey.js`
+    const url = `${process.env.HOME}/.netlify/functions/fetchAIKey`
+
     const response = await fetch(url, {
         method: 'post',
         headers: {
             'Content-Type': 'text/plain'
         },
-        body: JSON.stringify({
-            text: conversationStr
-        })
+        body: conversationStr
     })
 
-    console.log(response)
-    // const { text } = response.data.choices[0]
-    // conversationStr += ` ${text} \n`
-    // renderTypewriterText(text)
+    const data = await response.json()
+    const { text } = data.reply.choices[0]
+    conversationStr += ` ${text} \n`
+    renderTypewriterText(text)
 }
 
 function renderTypewriterText(text) {

@@ -1,0 +1,5 @@
+To install the netlify cli (currently requires node.js version 16.0.0 or later):
+npm i netlify-cli -g
+
+To initialise a netlify site (required to work with serverless functions):
+netlify init
